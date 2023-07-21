@@ -1,8 +1,9 @@
 import sqlite3 from 'sqlite3'
-import { readFile } from 'fs'
+import { read, readFile } from 'fs'
+import { join as joinPath } from 'path'
 import { parse as parseCSV } from 'csv-parse/sync'
 
-const db = new sqlite3.Database(':memory:')
+const db = new sqlite3.Database(joinPath(__dirname, '../data/db.sqlite3'))
 
 type Event = {
   startsAt: Date
@@ -52,7 +53,7 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
 
   db.serialize(() => {
     db.run(
-      'CREATE TABLE events (startsAt TEXT, location TEXT, company TEXT, title TEXT, duration INTEGER, paid INTEGER)'
+      'CREATE TABLE IF NOT EXISTS events (startsAt TEXT, location TEXT, company TEXT, title TEXT, duration INTEGER, paid INTEGER)'
     )
 
     const stmt = db.prepare(
@@ -71,9 +72,51 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
     })
 
     stmt.finalize()
+  })
+})
 
-    db.each('SELECT * FROM events', (err, row) => {
-      // console.log(row)
+readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
+  const csv: string[][] = parseCSV(data)
+
+  if (isNaN(+csv[0][2])) {
+    console.warn('Removing header row...')
+    csv.shift()
+  }
+
+  db.serialize(() => {
+    db.run(
+      'CREATE TABLE IF NOT EXISTS locations (name TEXT, addr TEXT, lat REAL, lon REAL)'
+    )
+    const stmt = db.prepare(
+      'INSERT INTO locations (name, addr, lat, lon) VALUES (?, ?, ?, ?)'
+    )
+
+    csv.forEach((row) => {
+      stmt.run(row[0], row[1], row[2], row[3])
     })
+
+    stmt.finalize()
+  })
+})
+
+readFile('data/location_names.csv', { encoding: 'utf-8' }, (err, data) => {
+  const csv: string[][] = parseCSV(data)
+
+  console.warn('Removing header row...')
+  csv.shift()
+
+  db.serialize(() => {
+    db.run(
+      'CREATE TABLE IF NOT EXISTS location_names (name TEXT, original_name TEXT)'
+    )
+    const stmt = db.prepare(
+      'INSERT INTO location_names (name, original_name) VALUES (?, ?)'
+    )
+
+    csv.forEach((row) => {
+      stmt.run(row[0], row[1])
+    })
+
+    stmt.finalize()
   })
 })
