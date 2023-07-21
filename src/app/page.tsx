@@ -1,95 +1,35 @@
-import Image from 'next/image'
 import styles from './page.module.css'
+import { AsyncDatabase } from 'promised-sqlite3'
+import { join as joinPath } from 'path'
+import dynamic from 'next/dynamic'
+import { EventRow, createEvent } from '@/lib/event'
 
-export default function Home() {
+const DB_PATH = joinPath(__dirname, '../../../data/db.sqlite3')
+
+export default async function Home() {
+  const db = await AsyncDatabase.open(DB_PATH)
+  const events = (
+    await db.all<EventRow>(
+      `SELECT 
+    e.*, 
+    ln.name as location_name,
+    l.lat as location_lat, 
+    l.lon as location_lon
+FROM 
+    events e 
+LEFT JOIN 
+    location_names ln ON e.location = ln.original_name
+LEFT JOIN 
+    locations l ON ln.name = l.name`
+    )
+  ).map((m) => createEvent(m))
+  const EventMap = dynamic(() => import('@/components/EventMap'), {
+    loading: () => <p>A map is loading</p>,
+    ssr: false,
+  })
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <EventMap events={events} />
     </main>
   )
 }
