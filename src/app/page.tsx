@@ -3,6 +3,7 @@ import styles from './page.module.css'
 import dynamic from 'next/dynamic'
 import { Event, EventRow, createEvent } from '@/lib/event'
 import useSWR from 'swr'
+import { ChakraProvider } from '@chakra-ui/react'
 
 const fetcher = (path: string) =>
   fetch(path)
@@ -16,8 +17,10 @@ export default function Home() {
     ssr: false,
   })
   return (
-    <main className={styles.main}>
-      {events ? <EventMap events={events} /> : 'Loading...'}
-    </main>
+    <ChakraProvider>
+      <main className={styles.main}>
+        {events ? <EventMap events={events} /> : 'Loading...'}
+      </main>
+    </ChakraProvider>
   )
 }

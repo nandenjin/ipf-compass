@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import { Icon, Point } from 'leaflet'
 import { Event } from '@/lib/event'
 import MARKER_ICON_URL from '@/assets/marker.png'
+import { Box, Button, Link } from '@chakra-ui/react'
 
 const icon = new Icon({
   iconUrl: MARKER_ICON_URL.src,
@@ -38,31 +39,35 @@ export default function EventMap({ events }: { events: Event[] }) {
           icon={icon}
         >
           <Popup offset={popupOffset}>
-            <p>
-              <a
-                href={createOfficialSearchUrl([event.company])}
+            <Box>
+              <p>
+                <a
+                  href={createOfficialSearchUrl([event.company])}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {event.company}
+                </a>
+              </p>
+              <p>{event.title}</p>
+              <p>{event.location}</p>
+              <Link
+                href={createOfficialSearchUrl([
+                  `${
+                    event.startsAt.getMonth() + 1
+                  }月${event.startsAt.getDate()}日`,
+                  `${event.startsAt.getHours()}:${(
+                    '00' + event.startsAt.getMinutes()
+                  ).slice(-2)}`,
+                ])}
                 rel="noreferrer"
                 target="_blank"
               >
-                {event.company}
-              </a>
-            </p>
-            <p>{event.title}</p>
-            <p>{event.location}</p>
-            <a
-              href={createOfficialSearchUrl([
-                `${
-                  event.startsAt.getMonth() + 1
-                }月${event.startsAt.getDate()}日`,
-                `${event.startsAt.getHours()}:${(
-                  '00' + event.startsAt.getMinutes()
-                ).slice(-2)}`,
-              ])}
-              rel="noreferrer"
-              target="_blank"
-            >
-              公式
-            </a>
+                <Button colorScheme="red" variant="solid">
+                  公式サイトでみる
+                </Button>
+              </Link>
+            </Box>
           </Popup>
         </Marker>
       ))}
