@@ -1,23 +1,28 @@
 import { getDb } from '@/lib/db'
 import { EventRow, createEvent } from '@/lib/event'
 import { NextResponse } from 'next/server'
+import { parse as parseQuery } from 'querystring'
 
-export async function GET(request: Request) {
-  const db = await getDb()
+export async function GET(req: Request) {
+  const db = getDb()
+
+  const query = parseQuery(req.url.split('?')[1] || '')
+
+  const sql = db<Event>('events')
+    .leftJoin('location_names as ln', 'events.location', 'ln.original_name')
+    .leftJoin('locations as l', 'ln.name', 'l.name')
+
+  if (query.from && query.to) {
+    sql.whereBetween('startsAt', [query.from, query.to])
+  }
+
   const events = (
-    await db.all<EventRow>(
-      `SELECT 
-    e.*, 
-    ln.name as location_name,
-    l.lat as location_lat, 
-    l.lon as location_lon
-FROM 
-    events e 
-LEFT JOIN 
-    location_names ln ON e.location = ln.original_name
-LEFT JOIN 
-    locations l ON ln.name = l.name`
-    )
+    await sql.select([
+      'events.*',
+      'ln.name as location_name',
+      'l.lat as location_lat',
+      'l.lon as location_lon',
+    ])
   ).map((m) => createEvent(m))
   return NextResponse.json(events)
 }

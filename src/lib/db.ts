@@ -1,4 +1,4 @@
-import { AsyncDatabase } from 'promised-sqlite3'
+import knex from 'knex'
 import { join as joinPath } from 'path'
 
 const DB_PATH = joinPath(
@@ -6,4 +6,11 @@ const DB_PATH = joinPath(
   './data/db.sqlite3'
 )
 
-export const getDb = () => AsyncDatabase.open(DB_PATH)
+export const getDb = () =>
+  knex({
+    client: 'better-sqlite3',
+    connection: {
+      filename: DB_PATH,
+    },
+    useNullAsDefault: true,
+  })

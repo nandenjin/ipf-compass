@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack(config, options) {
-    config.module.rules.push({
-      test: /\.sqlite3$/,
-      use: {
-        loader: 'file-loader',
-      },
-    })
+  webpack(config) {
+    console.log(config.externals)
+    config.externals.push({ knex: 'commonjs knex' })
     return config
   },
 }
