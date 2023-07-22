@@ -3,9 +3,17 @@ import styles from './page.module.css'
 import dynamic from 'next/dynamic'
 import { Event, EventRow, createEvent } from '@/lib/event'
 import useSWR from 'swr'
-import { ChakraProvider, Select } from '@chakra-ui/react'
+import {
+  Button,
+  ChakraProvider,
+  Icon,
+  Select,
+  Stack,
+  position,
+} from '@chakra-ui/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
+import { MdAccessTime } from 'react-icons/md'
 
 const fetcher = (path: string) =>
   fetch(path)
@@ -40,16 +48,31 @@ export default function Home() {
   return (
     <ChakraProvider>
       <main className={styles.main}>
-        <Select
-          onChange={(event) => {
-            router.replace('/?day=' + event.target?.value)
+        <Stack
+          style={{
+            position: 'fixed',
+            top: '1rem',
+            right: '1rem',
+            zIndex: 1000,
+            width: '10rem',
           }}
         >
-          <option value="2023-08-03">3日（木）</option>
-          <option value="2023-08-04">4日（金）</option>
-          <option value="2023-08-05">5日（土）</option>
-          <option value="2023-08-06">6日（日）</option>
-        </Select>
+          <Select
+            fontWeight={600}
+            bg="background"
+            onChange={(event) => {
+              router.replace('/?day=' + event.target?.value)
+            }}
+          >
+            <option value="2023-08-03">3日（木）</option>
+            <option value="2023-08-04">4日（金）</option>
+            <option value="2023-08-05">5日（土）</option>
+            <option value="2023-08-06">6日（日）</option>
+          </Select>
+          <Button leftIcon={<Icon as={MdAccessTime} />} bg="background">
+            終日
+          </Button>
+        </Stack>
         <EventMap events={events || []} />
       </main>
     </ChakraProvider>
