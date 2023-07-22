@@ -1,5 +1,5 @@
 'use client'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, Popup, TileLayer, Tooltip } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { Icon, Point } from 'leaflet'
 import { Event } from '@/lib/event'
@@ -20,33 +20,49 @@ const createOfficialSearchUrl = (query: string[]) =>
     .join('+')}&csp=search_add`
 
 export default function EventMap({ events }: { events: Event[] }) {
+  const eventsGrouped = events.reduce((prev, current) => {
+    for (const p of prev) {
+      if (p[0].location_name === current.location_name) {
+        p.push(current)
+        return prev
+      }
+    }
+    return [...prev, [current]]
+  }, [] as Event[][])
+
   return (
     <MapContainer
       bounds={[
         [35.43109805588201, 137.91810509245408],
         [35.561896082631115, 137.73458978836712],
       ]}
+      zoomControl={false}
       style={{ height: '100vh', width: '100vw' }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png"
       />
-      {events.map((event) => (
+      {eventsGrouped.map((events) => (
         <Marker
-          position={[event.location_lat, event.location_lon]}
-          key={event.company + event.startsAt}
+          position={[events[0].location_lat, events[0].location_lon]}
+          key={events[0].location_name}
           icon={icon}
         >
+          <Tooltip permanent={true} direction="top" offset={popupOffset}>
+            {events[0].startsAt.getHours() +
+              ':' +
+              ('00' + events[0].startsAt.getMinutes()).slice(-2)}
+          </Tooltip>
           <Popup offset={popupOffset}>
             <Box>
-              <p>
+              {/* <p>
                 <a
-                  href={createOfficialSearchUrl([event.company])}
+                  href={createOfficialSearchUrl([events[0].company])}
                   rel="noreferrer"
                   target="_blank"
                 >
-                  {event.company}
+                  {events[0].company}
                 </a>
               </p>
               <p>{event.title}</p>
@@ -66,7 +82,7 @@ export default function EventMap({ events }: { events: Event[] }) {
                 <Button colorScheme="red" variant="solid">
                   公式サイトでみる
                 </Button>
-              </Link>
+              </Link> */}
             </Box>
           </Popup>
         </Marker>
