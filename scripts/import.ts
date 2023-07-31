@@ -1,31 +1,46 @@
 import sqlite3 from 'sqlite3'
-import { read, readFile } from 'fs'
+import { readFile } from 'fs'
 import { join as joinPath } from 'path'
 import { parse as parseCSV } from 'csv-parse/sync'
 
 const db = new sqlite3.Database(joinPath(__dirname, '../data/db.sqlite3'))
 
 type Event = {
+  id: number
   startsAt: Date
-  location: string
+  venue: string
+  locationId: number
   company: string
   title: string
   duration: number
   paid: boolean
 }
 
-/**
- *
- * @param row [date,startTime,locationName,companyName,title,durationMin,paid]
- */
-const parseRow = (row: string[]): Event => ({
-  startsAt: parseDateAndTime(row[0], row[1]),
-  location: row[2],
-  company: row[3],
-  title: row[4],
-  duration: parseInt(row[5]),
-  paid: row[6].length > 0,
-})
+enum EventHeader {
+  id = 'id',
+  date = 'date',
+  startsAt = 'starts_at',
+
+  venueName = 'venue_name',
+  locationId = 'location_id',
+  companyName = 'company_name',
+  title = 'title',
+  durationMin = 'duration_min',
+  paid = 'paid',
+}
+
+enum LocationHeader {
+  id = 'id',
+  name = 'name',
+  address = 'addr',
+  lat = 'lat',
+  lon = 'lon',
+}
+
+enum VenueHeader {
+  name = 'name',
+  locationId = 'location_id',
+}
 
 const parseDateAndTime = (date: string, time: string): Date => {
   const [year, month, day] = date.split('/').map((s) => parseInt(s))
@@ -42,28 +57,56 @@ const parseDateAndTime = (date: string, time: string): Date => {
 readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
   const csv: string[][] = parseCSV(data)
 
-  try {
-    parseDateAndTime(csv[0][0], csv[0][1]).toISOString()
-  } catch (_) {
-    console.warn('Removing header row...')
-    csv.shift()
-  }
+  const header = csv[0]
+  console.warn('Removing header row...')
+  csv.shift()
+
+  /**
+   *
+   * @param row [id,date,startTime,locationName,companyName,title,durationMin,paid]
+   */
+  const parseRow = (row: string[]): Event => ({
+    id: parseInt(row[header.indexOf(EventHeader.id)]),
+    startsAt: parseDateAndTime(
+      row[header.indexOf(EventHeader.date)],
+      row[header.indexOf(EventHeader.startsAt)]
+    ),
+    venue: row[header.indexOf(EventHeader.venueName)],
+    locationId: parseInt(row[header.indexOf(EventHeader.locationId)]),
+    company: row[header.indexOf(EventHeader.companyName)],
+    title: row[header.indexOf(EventHeader.title)],
+    duration: parseInt(row[header.indexOf(EventHeader.durationMin)]),
+    paid: row[header.indexOf(EventHeader.paid)].length > 0,
+  })
 
   const events = csv.map(parseRow)
 
   db.serialize(() => {
     db.run(
-      'CREATE TABLE IF NOT EXISTS events (startsAt TEXT, location TEXT, company TEXT, title TEXT, duration INTEGER, paid INTEGER)'
+      `CREATE TABLE IF NOT EXISTS events (
+        id INTEGER,
+        startsAt TEXT,
+        venue TEXT,
+        location_id INTEGER,
+        company TEXT,
+        title TEXT,
+        duration
+        INTEGER,
+        paid INTEGER,
+        PRIMARY KEY (id)
+      )`
     )
 
     const stmt = db.prepare(
-      'INSERT INTO events (startsAt, location, company, title, duration, paid) VALUES (?, ?, ?, ?, ?, ?)'
+      'INSERT INTO events (id, startsAt, venue, location_id, company, title, duration, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING'
     )
 
     events.forEach((event) => {
       stmt.run(
+        event.id,
         event.startsAt.toISOString(),
-        event.location,
+        event.venue,
+        event.locationId,
         event.company,
         event.title,
         event.duration,
@@ -78,43 +121,53 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
 readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
   const csv: string[][] = parseCSV(data)
 
-  if (isNaN(+csv[0][2])) {
-    console.warn('Removing header row...')
-    csv.shift()
-  }
+  const header = csv[0]
+  console.warn('Removing header row...')
+  csv.shift()
 
   db.serialize(() => {
     db.run(
-      'CREATE TABLE IF NOT EXISTS locations (name TEXT, addr TEXT, lat REAL, lon REAL)'
+      'CREATE TABLE IF NOT EXISTS locations (id INTEGER, name TEXT, addr TEXT, lat REAL, lon REAL, PRIMARY KEY (id))'
     )
     const stmt = db.prepare(
-      'INSERT INTO locations (name, addr, lat, lon) VALUES (?, ?, ?, ?)'
+      'INSERT INTO locations (id, name, addr, lat, lon) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING'
     )
 
     csv.forEach((row) => {
-      stmt.run(row[0], row[1], row[2], row[3])
+      stmt.run(
+        row[header.indexOf(LocationHeader.id)],
+        row[header.indexOf(LocationHeader.name)],
+        row[header.indexOf(LocationHeader.address)],
+        row[header.indexOf(LocationHeader.lat)],
+        row[header.indexOf(LocationHeader.lon)]
+      )
     })
 
     stmt.finalize()
   })
 })
 
-readFile('data/location_names.csv', { encoding: 'utf-8' }, (err, data) => {
+readFile('data/venues.csv', { encoding: 'utf-8' }, (err, data) => {
   const csv: string[][] = parseCSV(data)
+
+  const header = csv[0]
 
   console.warn('Removing header row...')
   csv.shift()
 
   db.serialize(() => {
     db.run(
-      'CREATE TABLE IF NOT EXISTS location_names (name TEXT, original_name TEXT)'
+      'CREATE TABLE IF NOT EXISTS venues (name TEXT, location_id INTEGER, PRIMARY KEY (name))'
     )
     const stmt = db.prepare(
-      'INSERT INTO location_names (name, original_name) VALUES (?, ?)'
+      'INSERT INTO venues (name, location_id) VALUES (?, ?) ON CONFLICT DO NOTHING'
     )
 
     csv.forEach((row) => {
-      stmt.run(row[0], row[1])
+      stmt.run(
+        row[header.indexOf(VenueHeader.name)],
+        row[header.indexOf(VenueHeader.locationId)]
+      )
     })
 
     stmt.finalize()

@@ -20,9 +20,9 @@ const createOfficialSearchUrl = (query: string[]) =>
     .map((m) => encodeURIComponent(m))
     .join('+')}&csp=search_add`
 
-type Prop = { events: Event[] }
+type Prop = { events: Event[]; day?: string }
 
-export default function EventMap({ events }: Prop) {
+export default function EventMap({ events, day }: Prop) {
   const eventsGrouped = events.reduce((prev, current) => {
     for (const p of prev) {
       if (p[0].location_name === current.location_name) {
@@ -82,7 +82,10 @@ export default function EventMap({ events }: Prop) {
                 // rel="noreferrer"
                 // target="_blank"
                 as={NextLink}
-                href={`/events/${events[0].location_name}`}
+                href={
+                  `/2023/locations/${events[0].location_name}` +
+                  (day ? `?day=${day}` : '')
+                }
               >
                 <Button colorScheme="red" variant="solid">
                   この会場を見る

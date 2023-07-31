@@ -1,42 +1,60 @@
 export type EventRow = {
+  id: number
   startsAt: string
-  location: string
+  venue: string
+  location_id: number
   company: string
   title: string
   location_name: string
   location_lat: number
   location_lon: number
+  paid: number
+}
+
+export type Location = {
+  id: number
+  name: string
+  lat: number
+  lon: number
 }
 
 export type Event = {
+  id: number
   startsAt: Date
-  location: string
   company: string
   title: string
-  location_name: string
-  location_lat: number
-  location_lon: number
+  venue: string
+  location: Location
+  paid: boolean
 }
 
 export const createEvent = (eventRow: EventRow) => {
   const {
+    id,
     startsAt,
-    location,
+    venue,
+    location_id,
     company,
     title,
     location_name,
     location_lat,
     location_lon,
+    paid,
   } = eventRow
   const startsAtDate = new Date(startsAt)
 
   return {
+    id,
     startsAt: startsAtDate,
-    location,
     company,
     title,
-    location_name,
-    location_lat,
-    location_lon,
+    venue,
+    paid: !!paid,
+    location: {
+      id: location_id,
+      name: location_name,
+      lat: location_lat,
+      lon: location_lon,
+    },
   }
 }

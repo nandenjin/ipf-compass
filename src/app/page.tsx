@@ -1,7 +1,7 @@
 'use client'
 import styles from './page.module.css'
 import dynamic from 'next/dynamic'
-import { EventRow, createEvent } from '@/lib/event'
+import { Event } from '@/lib/event'
 import useSWR from 'swr'
 import { Button, ChakraProvider, Icon, Select, Stack } from '@chakra-ui/react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -10,8 +10,13 @@ import { MdAccessTime } from 'react-icons/md'
 
 const fetcher = (path: string) =>
   fetch(path)
-    .then<EventRow[]>((res) => res.json())
-    .then((t) => t.map((t) => createEvent(t)))
+    .then((res) => res.json())
+    .then<Event[]>((rows: Record<keyof Event, any>[]) => {
+      for (const row of rows) {
+        row.startsAt = new Date(row.startsAt)
+      }
+      return rows
+    })
 
 export default function Home() {
   const params = useSearchParams()
@@ -29,6 +34,7 @@ export default function Home() {
     '/api/v1/events?' + apiQuery.toString(),
     fetcher
   )
+
   const EventMap = useMemo(
     () =>
       dynamic(() => import('@/components/EventMap'), {
@@ -67,7 +73,7 @@ export default function Home() {
             終日
           </Button>
         </Stack>
-        <EventMap events={events || []} />
+        <EventMap events={events || []} day={day || undefined} />
       </main>
     </ChakraProvider>
   )

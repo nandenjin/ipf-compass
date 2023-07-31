@@ -8,9 +8,11 @@ export async function GET(req: Request) {
 
   const query = parseQuery(req.url.split('?')[1] || '')
 
-  const sql = db<Event>('events')
-    .leftJoin('location_names as ln', 'events.location', 'ln.original_name')
-    .leftJoin('locations as l', 'ln.name', 'l.name')
+  const sql = db<Event>('events').leftJoin(
+    'locations as l',
+    'events.location_id',
+    'l.id'
+  )
 
   if (query.from && query.to) {
     sql.whereBetween('startsAt', [query.from, query.to])
@@ -19,7 +21,7 @@ export async function GET(req: Request) {
   const events = (
     await sql.select([
       'events.*',
-      'ln.name as location_name',
+      'l.name as location_name',
       'l.lat as location_lat',
       'l.lon as location_lon',
     ])

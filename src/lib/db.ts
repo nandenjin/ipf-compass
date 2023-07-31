@@ -8,7 +8,7 @@ const DB_PATH = joinPath(
 
 export const getDb = () =>
   knex({
-    client: 'better-sqlite3',
+    client: 'sqlite3',
     connection: {
       filename: DB_PATH,
     },
