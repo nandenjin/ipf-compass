@@ -20,7 +20,9 @@ const createOfficialSearchUrl = (query: string[]) =>
     .map((m) => encodeURIComponent(m))
     .join('+')}&csp=search_add`
 
-export default function EventMap({ events }: { events: Event[] }) {
+type Prop = { events: Event[] }
+
+export default function EventMap({ events }: Prop) {
   const eventsGrouped = events.reduce((prev, current) => {
     for (const p of prev) {
       if (p[0].location_name === current.location_name) {

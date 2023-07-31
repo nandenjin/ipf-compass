@@ -1,16 +1,9 @@
 'use client'
 import styles from './page.module.css'
 import dynamic from 'next/dynamic'
-import { Event, EventRow, createEvent } from '@/lib/event'
+import { EventRow, createEvent } from '@/lib/event'
 import useSWR from 'swr'
-import {
-  Button,
-  ChakraProvider,
-  Icon,
-  Select,
-  Stack,
-  position,
-} from '@chakra-ui/react'
+import { Button, ChakraProvider, Icon, Select, Stack } from '@chakra-ui/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 import { MdAccessTime } from 'react-icons/md'
@@ -63,6 +56,7 @@ export default function Home() {
             onChange={(event) => {
               router.replace('/?day=' + event.target?.value)
             }}
+            value={params.get('day') || '2023-08-03'}
           >
             <option value="2023-08-03">3日（木）</option>
             <option value="2023-08-04">4日（金）</option>
