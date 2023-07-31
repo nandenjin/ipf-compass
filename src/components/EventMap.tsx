@@ -4,7 +4,8 @@ import 'leaflet/dist/leaflet.css'
 import { Icon, Point } from 'leaflet'
 import { Event } from '@/lib/event'
 import MARKER_ICON_URL from '@/assets/marker.png'
-import { Box, Button, Link } from '@chakra-ui/react'
+import { Box, Button, Link as ChakraLink } from '@chakra-ui/react'
+import NextLink from 'next/link'
 
 const icon = new Icon({
   iconUrl: MARKER_ICON_URL.src,
@@ -56,33 +57,35 @@ export default function EventMap({ events }: { events: Event[] }) {
           </Tooltip>
           <Popup offset={popupOffset}>
             <Box>
-              {/* <p>
-                <a
-                  href={createOfficialSearchUrl([events[0].company])}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  {events[0].company}
-                </a>
-              </p>
-              <p>{event.title}</p>
-              <p>{event.location}</p>
-              <Link
-                href={createOfficialSearchUrl([
-                  `${
-                    event.startsAt.getMonth() + 1
-                  }月${event.startsAt.getDate()}日`,
-                  `${event.startsAt.getHours()}:${(
-                    '00' + event.startsAt.getMinutes()
-                  ).slice(-2)}`,
-                ])}
-                rel="noreferrer"
-                target="_blank"
+              <p>{events[0].location_name}</p>
+              <ul>
+                {events.map((event) => (
+                  <li key={event.company}>
+                    <span>{`${event.startsAt.getHours()}:${(
+                      '00' + event.startsAt.getMinutes()
+                    ).slice(-2)}`}</span>
+                    <span>{event.company}</span>
+                  </li>
+                ))}
+              </ul>
+              <ChakraLink
+                // href={createOfficialSearchUrl([
+                //   `${
+                //     event.startsAt.getMonth() + 1
+                //   }月${event.startsAt.getDate()}日`,
+                //   `${event.startsAt.getHours()}:${(
+                //     '00' + event.startsAt.getMinutes()
+                //   ).slice(-2)}`,
+                // ])}
+                // rel="noreferrer"
+                // target="_blank"
+                as={NextLink}
+                href={`/events/${events[0].location_name}`}
               >
                 <Button colorScheme="red" variant="solid">
-                  公式サイトでみる
+                  この会場を見る
                 </Button>
-              </Link> */}
+              </ChakraLink>
             </Box>
           </Popup>
         </Marker>
