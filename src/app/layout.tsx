@@ -3,6 +3,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { StoreProvider } from '@/components/StoreProvider'
+import SiteHeader from '@/components/SiteHeader'
+import { Grid, GridItem, Box } from '@chakra-ui/layout'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +22,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <StoreProvider>
-          <MyChakraProvider>{children}</MyChakraProvider>
+          <MyChakraProvider>
+            <Grid gridTemplateRows="80px 1fr" style={{ height: '100vh' }}>
+              <GridItem>
+                <SiteHeader />
+              </GridItem>
+              <GridItem>{children}</GridItem>
+            </Grid>
+          </MyChakraProvider>
         </StoreProvider>
       </body>
     </html>

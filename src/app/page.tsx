@@ -1,17 +1,8 @@
 'use client'
-import styles from './page.module.css'
 import dynamic from 'next/dynamic'
 import { Event } from '@/lib/event'
 import useSWR from 'swr'
-import {
-  Button,
-  Center,
-  ChakraProvider,
-  Icon,
-  Select,
-  Spinner,
-  Stack,
-} from '@chakra-ui/react'
+import { Button, Center, Icon, Select, Spinner, Stack } from '@chakra-ui/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 import { MdAccessTime } from 'react-icons/md'
@@ -57,15 +48,13 @@ export default function Home() {
   )
   const router = useRouter()
   return (
-    <main className={styles.main}>
+    <main style={{ position: 'relative', height: '100%' }}>
       <Stack
-        style={{
-          position: 'fixed',
-          top: '1rem',
-          right: '1rem',
-          zIndex: 1000,
-          width: '10rem',
-        }}
+        position={'absolute'}
+        top={7}
+        right={7}
+        zIndex={500}
+        width={'10rem'}
       >
         <Select
           fontWeight={600}

@@ -10,9 +10,11 @@ import {
   Link as ChakraLink,
   ListItem,
   Text,
-  UnorderedList,
+  Heading,
+  List,
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
+import { formatDate } from '@/lib/date'
 
 const icon = new Icon({
   iconUrl: MARKER_ICON_URL.src,
@@ -49,7 +51,7 @@ export default function EventMap({ events, day }: Prop) {
       center={[35.51694329400712, 137.82745253760703]}
       zoom={14}
       zoomControl={false}
-      style={{ height: '100vh', width: '100vw' }}
+      style={{ height: '100%', width: '100%' }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -62,23 +64,33 @@ export default function EventMap({ events, day }: Prop) {
           icon={icon}
         >
           <Tooltip permanent={true} direction="top" offset={popupOffset}>
-            {events[0].startsAt.getHours() +
-              ':' +
-              ('00' + events[0].startsAt.getMinutes()).slice(-2)}
+            {formatDate(events[0].startsAt, 'hh:mm')}
           </Tooltip>
           <Popup offset={popupOffset}>
-            <Box>
-              <Text>{events[0].location.name}</Text>
-              <UnorderedList>
+            <Box marginTop={2} marginBottom={2}>
+              <Heading as="h3" fontSize={16}>
+                {events[0].location.name}
+              </Heading>
+              <List
+                marginTop={3}
+                marginBottom={3}
+                listStyleType="none"
+                spacing={1}
+              >
                 {events.map((event) => (
                   <ListItem key={event.id}>
-                    <span>{`${event.startsAt.getHours()}:${(
+                    <Text
+                      color="gray"
+                      as="span"
+                    >{`${event.startsAt.getHours()}:${(
                       '00' + event.startsAt.getMinutes()
-                    ).slice(-2)}`}</span>
-                    <span>{event.company}</span>
+                    ).slice(-2)}`}</Text>
+                    <Text as="span" marginLeft={2}>
+                      {event.company}
+                    </Text>
                   </ListItem>
                 ))}
-              </UnorderedList>
+              </List>
               <ChakraLink
                 // href={createOfficialSearchUrl([
                 //   `${
@@ -95,7 +107,7 @@ export default function EventMap({ events, day }: Prop) {
                   `/locations/${events[0].location.id}` + (day ? `#${day}` : '')
                 }
               >
-                <Button colorScheme="red" variant="solid">
+                <Button colorScheme="red" variant="solid" width={'100%'}>
                   この会場を見る
                 </Button>
               </ChakraLink>
