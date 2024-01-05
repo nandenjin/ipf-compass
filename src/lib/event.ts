@@ -28,7 +28,7 @@ export type Event = {
   paid: boolean
 }
 
-export const createEvent = (eventRow: EventRow) => {
+export const createEvent = (eventRow: EventRow): Event => {
   const {
     id,
     startsAt,

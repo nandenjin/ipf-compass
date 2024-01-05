@@ -4,7 +4,14 @@ import 'leaflet/dist/leaflet.css'
 import { Icon, Point } from 'leaflet'
 import { Event } from '@/lib/event'
 import MARKER_ICON_URL from '@/assets/marker.png'
-import { Box, Button, Link as ChakraLink } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Link as ChakraLink,
+  ListItem,
+  Text,
+  UnorderedList,
+} from '@chakra-ui/react'
 import NextLink from 'next/link'
 
 const icon = new Icon({
@@ -25,7 +32,7 @@ type Prop = { events: Event[]; day?: string }
 export default function EventMap({ events, day }: Prop) {
   const eventsGrouped = events.reduce((prev, current) => {
     for (const p of prev) {
-      if (p[0].location_name === current.location_name) {
+      if (p[0].location.id === current.location.id) {
         p.push(current)
         return prev
       }
@@ -35,10 +42,12 @@ export default function EventMap({ events, day }: Prop) {
 
   return (
     <MapContainer
-      bounds={[
-        [35.43109805588201, 137.91810509245408],
-        [35.561896082631115, 137.73458978836712],
-      ]}
+      // bounds={[
+      //   [35.43109805588201, 137.91810509245408],
+      //   [35.561896082631115, 137.73458978836712],
+      // ]}
+      center={[35.51694329400712, 137.82745253760703]}
+      zoom={14}
       zoomControl={false}
       style={{ height: '100vh', width: '100vw' }}
     >
@@ -48,8 +57,8 @@ export default function EventMap({ events, day }: Prop) {
       />
       {eventsGrouped.map((events) => (
         <Marker
-          position={[events[0].location_lat, events[0].location_lon]}
-          key={events[0].location_name}
+          position={[events[0].location.lat, events[0].location.lon]}
+          key={events[0].location.id}
           icon={icon}
         >
           <Tooltip permanent={true} direction="top" offset={popupOffset}>
@@ -59,17 +68,17 @@ export default function EventMap({ events, day }: Prop) {
           </Tooltip>
           <Popup offset={popupOffset}>
             <Box>
-              <p>{events[0].location_name}</p>
-              <ul>
+              <Text>{events[0].location.name}</Text>
+              <UnorderedList>
                 {events.map((event) => (
-                  <li key={event.company}>
+                  <ListItem key={event.id}>
                     <span>{`${event.startsAt.getHours()}:${(
                       '00' + event.startsAt.getMinutes()
                     ).slice(-2)}`}</span>
                     <span>{event.company}</span>
-                  </li>
+                  </ListItem>
                 ))}
-              </ul>
+              </UnorderedList>
               <ChakraLink
                 // href={createOfficialSearchUrl([
                 //   `${
@@ -83,8 +92,7 @@ export default function EventMap({ events, day }: Prop) {
                 // target="_blank"
                 as={NextLink}
                 href={
-                  `/2023/locations/${events[0].location_name}` +
-                  (day ? `?day=${day}` : '')
+                  `/locations/${events[0].location.id}` + (day ? `#${day}` : '')
                 }
               >
                 <Button colorScheme="red" variant="solid">
