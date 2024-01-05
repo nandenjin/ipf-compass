@@ -3,6 +3,7 @@
   "extends": ["config:recommended"],
   "labels": ["dependencies", "renovate"],
   "schedule": ["* * 3,13,23 * *"],
+  "rangeStrategy": "pin",
   "packageRules": [
     {
       "matchUpdateTypes": [
