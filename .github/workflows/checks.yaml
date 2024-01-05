@@ -30,3 +30,6 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+        env:
+          # Using dummy API key to avoid assertion error
+          NEXT_PUBLIC_FIREBASE_API_KEY: DUMMY_API_KEY
