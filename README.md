@@ -1,3 +1,11 @@
+# 🧭 ipf-compass
+
+![Version of React.js](https://img.shields.io/github/package-json/dependency-version/nandenjin/ipf-compass/react?style=flat-square&logo=react)
+![Version of Next.js](https://img.shields.io/github/package-json/dependency-version/nandenjin/ipf-compass/next?style=flat-square&logo=next.js)
+![Build Status](https://img.shields.io/github/actions/workflow/status/nandenjin/ipf-compass/checks.yaml?style=flat-square&logo=github)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/nandenjin/ipf-compass?style=flat-square&logo=codeclimate)](https://codeclimate.com/github/nandenjin/ipf-compass)
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
