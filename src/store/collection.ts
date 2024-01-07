@@ -1,7 +1,6 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   DocumentSnapshot,
-  FirestoreDataConverter,
   arrayRemove,
   arrayUnion,
   collection,

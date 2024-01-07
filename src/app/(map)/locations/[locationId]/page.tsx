@@ -83,7 +83,14 @@ export default async function LocationPage({
                 <CardBody>
                   <Stack gap={2} divider={<Divider />}>
                     {evts.map((event) => (
-                      <Grid key={event.id} templateColumns="1fr auto" gap={5}>
+                      <Grid
+                        key={event.id}
+                        templateColumns="1fr auto"
+                        gap={5}
+                        id={event.id.toString()}
+                        marginTop="-100px"
+                        paddingTop="100px"
+                      >
                         <GridItem>
                           <Box>
                             {getHHMM(event.startsAt)}~

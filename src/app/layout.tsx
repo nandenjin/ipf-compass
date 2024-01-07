@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { StoreProvider } from '@/components/StoreProvider'
 import SiteHeader from '@/components/SiteHeader'
-import { Grid, GridItem, Box } from '@chakra-ui/layout'
+import { Grid, GridItem } from '@chakra-ui/layout'
 
 const inter = Inter({ subsets: ['latin'] })
 

@@ -13,3 +13,15 @@ export const formatDate = (date: Date, format: string) =>
     .replace(/DD/g, date.getDate().toString())
     .replace(/hh/g, date.getHours().toString())
     .replace(/mm/g, ('00' + date.getMinutes()).slice(-2))
+
+export const timeToReadableString = (timeMs: number) => {
+  if (timeMs < 1000 * 60) {
+    return 'まもなく'
+  } else if (timeMs < 1000 * 60 * 60) {
+    return `${Math.floor(timeMs / (1000 * 60))}分`
+  } else if (timeMs < 1000 * 60 * 60 * 24) {
+    return `${Math.floor(timeMs / (1000 * 60 * 60))}時間`
+  } else {
+    return `${Math.floor(timeMs / (1000 * 60 * 60 * 24))}日`
+  }
+}
