@@ -1,5 +1,5 @@
 import { getDb } from '@/lib/db'
-import { EventRow, createEvent } from '@/lib/event'
+import { createEvent } from '@/lib/event'
 import { NextResponse } from 'next/server'
 import { parse as parseQuery } from 'querystring'
 
