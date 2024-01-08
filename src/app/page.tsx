@@ -69,7 +69,11 @@ export default function Home() {
           <option value="2023-08-05">5日（土）</option>
           <option value="2023-08-06">6日（日）</option>
         </Select>
-        <Button leftIcon={<Icon as={MdAccessTime} />} bg="background">
+        <Button
+          leftIcon={<Icon as={MdAccessTime} />}
+          bg="background"
+          visibility={'hidden'}
+        >
           終日
         </Button>
       </Stack>
