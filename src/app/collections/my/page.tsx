@@ -46,7 +46,10 @@ export default function MyPage() {
     <Box margin={7}>
       <Heading>保存した公演</Heading>
       <Grid
-        gridTemplateColumns={`repeat(${dates.length}, 1fr)`}
+        gridTemplateColumns={{
+          base: '1fr',
+          lg: `repeat(${dates.length}, 1fr)`,
+        }}
         gap={5}
         marginTop={7}
       >
