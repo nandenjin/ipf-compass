@@ -15,7 +15,6 @@ import { Spinner } from '@chakra-ui/spinner'
 import { Tag } from '@chakra-ui/tag'
 import { Event } from '@/lib/event'
 import { EventSaveButton } from '@/components/EventSaveButton'
-import { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 
 export default async function LocationPage({
@@ -57,70 +56,89 @@ export default async function LocationPage({
     .sort((a, b) => a[0].startsAt.getTime() - b[0].startsAt.getTime())
 
   return (
-    <Box margin={7} position="relative">
+    <Box marginTop={7} marginBottom={7} position="relative">
       <Box
         marginRight={{
           base: 0,
           lg: '50vw',
         }}
       >
-        <Heading as="h1">{location.name}</Heading>
-        <Stack gap={5}>
-          {eventsGrouped.map((evts) => (
-            <Box key={evts[0].id}>
-              <Heading
-                as="h2"
-                size="md"
-                id={getYYYYMMDD(evts[0].startsAt)}
-                // アンカーリンクでアクセスされたときに、ヘッダーで見出しが隠れないようにするハック
-                // https://stackoverflow.com/a/11842865
-                marginTop="calc(1em - 100px)"
-                paddingTop="100px"
-              >
-                {formatDate(evts[0].startsAt, 'MM月DD日')}
-              </Heading>
-              <Card key={getYYYYMMDD(evts[0].startsAt)}>
-                <CardBody>
-                  <Stack gap={2} divider={<Divider />}>
-                    {evts.map((event) => (
-                      <Grid
-                        key={event.id}
-                        templateColumns="1fr auto"
-                        gap={5}
-                        id={event.id.toString()}
-                        marginTop="-100px"
-                        paddingTop="100px"
-                      >
-                        <GridItem>
-                          <Box>
-                            {getHHMM(event.startsAt)}~
-                            {event.paid ? (
-                              <Tag bg="red.200" marginLeft={2}>
-                                有料
-                              </Tag>
-                            ) : null}
-                          </Box>
-                          <Heading
-                            as="h3"
-                            size="md"
-                            marginTop={1}
-                            marginBottom={1}
-                          >
-                            {event.company}
-                          </Heading>
-                          <Box>{event.venue}</Box>
-                        </GridItem>
-                        <GridItem>
-                          <EventSaveButton event={event} />
-                        </GridItem>
-                      </Grid>
-                    ))}
-                  </Stack>
-                </CardBody>
-              </Card>
-            </Box>
-          ))}
-        </Stack>
+        <Heading
+          as="h1"
+          position="sticky"
+          top="80px"
+          bg="white"
+          zIndex="500"
+          padding={3}
+          paddingLeft={7}
+          paddingRight={7}
+        >
+          {location.name}
+        </Heading>
+        {eventsGrouped.map((evts) => (
+          <Box key={evts[0].id} id={getYYYYMMDD(evts[0].startsAt)}>
+            <Heading
+              as="h2"
+              size="md"
+              position="sticky"
+              top="140px"
+              bg="white"
+              zIndex={400}
+              paddingLeft={7}
+              paddingRight={7}
+              paddingTop={4}
+              paddingBottom={2}
+            >
+              {formatDate(evts[0].startsAt, 'MM月DD日')}
+            </Heading>
+            <Card
+              key={getYYYYMMDD(evts[0].startsAt)}
+              gap={5}
+              marginTop={3}
+              marginLeft={7}
+              marginRight={7}
+            >
+              <CardBody>
+                <Stack gap={2} divider={<Divider />}>
+                  {evts.map((event) => (
+                    <Grid
+                      key={event.id}
+                      templateColumns="1fr auto"
+                      gap={5}
+                      id={event.id.toString()}
+                      // Trick to make the sticky header work if the page is loaded with a hash
+                      marginTop="-100px"
+                      paddingTop="100px"
+                    >
+                      <GridItem>
+                        <Box>
+                          {getHHMM(event.startsAt)}~
+                          {event.paid ? (
+                            <Tag bg="red.200" marginLeft={2}>
+                              有料
+                            </Tag>
+                          ) : null}
+                        </Box>
+                        <Heading
+                          as="h3"
+                          size="md"
+                          marginTop={1}
+                          marginBottom={1}
+                        >
+                          {event.company}
+                        </Heading>
+                        <Box>{event.venue}</Box>
+                      </GridItem>
+                      <GridItem>
+                        <EventSaveButton event={event} />
+                      </GridItem>
+                    </Grid>
+                  ))}
+                </Stack>
+              </CardBody>
+            </Card>
+          </Box>
+        ))}
         <Box
           position={{
             base: 'static',
