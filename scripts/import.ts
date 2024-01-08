@@ -55,11 +55,18 @@ const parseDateAndTime = (date: string, time: string): Date => {
 }
 
 readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
+  if (err) {
+    console.error('Failed to read event file.')
+    console.error(err)
+    return
+  }
+
   const csv: string[][] = parseCSV(data)
 
   const header = csv[0]
   console.warn('Removing header row...')
   csv.shift()
+  console.info(`Importing ${csv.length} rows from event...`)
 
   /**
    *
@@ -80,6 +87,7 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
   })
 
   const events = csv.map(parseRow)
+  console.info(`Parsed ${events.length} events.`)
 
   db.serialize(() => {
     db.run(
@@ -114,16 +122,24 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
       )
     })
 
+    console.log(`Writing ${events.length} events...`)
     stmt.finalize()
   })
 })
 
 readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
+  if (err) {
+    console.error('Failed to read location file.')
+    console.error(err)
+    return
+  }
+
   const csv: string[][] = parseCSV(data)
 
   const header = csv[0]
   console.warn('Removing header row...')
   csv.shift()
+  console.log(`Importing ${csv.length} rows from location...`)
 
   db.serialize(() => {
     db.run(
@@ -143,17 +159,26 @@ readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
       )
     })
 
+    console.log(`Writing ${csv.length} locations...`)
     stmt.finalize()
   })
 })
 
 readFile('data/venues.csv', { encoding: 'utf-8' }, (err, data) => {
+  if (err) {
+    console.error('Failed to read venue file.')
+    console.error(err)
+    return
+  }
+
   const csv: string[][] = parseCSV(data)
 
   const header = csv[0]
 
   console.warn('Removing header row...')
   csv.shift()
+
+  console.log(`Importing ${csv.length} rows from venue...`)
 
   db.serialize(() => {
     db.run(
@@ -170,6 +195,7 @@ readFile('data/venues.csv', { encoding: 'utf-8' }, (err, data) => {
       )
     })
 
+    console.log(`Writing ${csv.length} venues...`)
     stmt.finalize()
   })
 })
