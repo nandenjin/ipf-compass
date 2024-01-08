@@ -57,8 +57,7 @@ const parseDateAndTime = (date: string, time: string): Date => {
 readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
   if (err) {
     console.error('Failed to read event file.')
-    console.error(err)
-    return
+    throw err
   }
 
   const csv: string[][] = parseCSV(data)
@@ -130,8 +129,7 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
 readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
   if (err) {
     console.error('Failed to read location file.')
-    console.error(err)
-    return
+    throw err
   }
 
   const csv: string[][] = parseCSV(data)
@@ -167,8 +165,7 @@ readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
 readFile('data/venues.csv', { encoding: 'utf-8' }, (err, data) => {
   if (err) {
     console.error('Failed to read venue file.')
-    console.error(err)
-    return
+    throw err
   }
 
   const csv: string[][] = parseCSV(data)
