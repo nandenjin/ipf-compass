@@ -106,20 +106,20 @@ readFile('data/2023.csv', { encoding: 'utf-8' }, (err, data) => {
     )
 
     const stmt = db.prepare(
-      'INSERT INTO events (id, startsAt, venue, location_id, company, title, duration, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING'
+      'INSERT INTO events (id, startsAt, venue, location_id, company, title, duration, paid) VALUES ($id, $startsAt, $venue, $locationId, $company, $title, $duration, $paid) ON CONFLICT DO UPDATE SET startsAt = $startsAt, venue = $venue, location_id = $locationId, company = $company, title = $title, duration = $duration, paid = $paid'
     )
 
     events.forEach((event) => {
-      stmt.run(
-        event.id,
-        event.startsAt.toISOString(),
-        event.venue,
-        event.locationId,
-        event.company,
-        event.title,
-        event.duration,
-        event.paid ? 1 : 0
-      )
+      stmt.run({
+        $id: event.id,
+        $startsAt: event.startsAt.toISOString(),
+        $venue: event.venue,
+        $locationId: event.locationId,
+        $company: event.company,
+        $title: event.title,
+        $duration: event.duration,
+        $paid: event.paid ? 1 : 0,
+      })
     })
 
     console.log(`Writing ${events.length} events...`)
@@ -146,17 +146,17 @@ readFile('data/locations.csv', { encoding: 'utf-8' }, (err, data) => {
       'CREATE TABLE IF NOT EXISTS locations (id INTEGER, name TEXT, addr TEXT, lat REAL, lon REAL, PRIMARY KEY (id))'
     )
     const stmt = db.prepare(
-      'INSERT INTO locations (id, name, addr, lat, lon) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING'
+      'INSERT INTO locations (id, name, addr, lat, lon) VALUES ($id, $name, $addr, $lat, $lon) ON CONFLICT DO UPDATE SET name = $name, addr = $addr, lat = $lat, lon = $lon'
     )
 
     csv.forEach((row) => {
-      stmt.run(
-        row[header.indexOf(LocationHeader.id)],
-        row[header.indexOf(LocationHeader.name)],
-        row[header.indexOf(LocationHeader.address)],
-        row[header.indexOf(LocationHeader.lat)],
-        row[header.indexOf(LocationHeader.lon)]
-      )
+      stmt.run({
+        $id: row[header.indexOf(LocationHeader.id)],
+        $name: row[header.indexOf(LocationHeader.name)],
+        $addr: row[header.indexOf(LocationHeader.address)],
+        $lat: row[header.indexOf(LocationHeader.lat)],
+        $lon: row[header.indexOf(LocationHeader.lon)],
+      })
     })
 
     console.log(`Writing ${csv.length} locations...`)
@@ -185,14 +185,14 @@ readFile('data/venues.csv', { encoding: 'utf-8' }, (err, data) => {
       'CREATE TABLE IF NOT EXISTS venues (name TEXT, location_id INTEGER, PRIMARY KEY (name))'
     )
     const stmt = db.prepare(
-      'INSERT INTO venues (name, location_id) VALUES (?, ?) ON CONFLICT DO NOTHING'
+      'INSERT INTO venues (name, location_id) VALUES ($name, $locationId) ON CONFLICT DO UPDATE SET location_id = $locationId'
     )
 
     csv.forEach((row) => {
-      stmt.run(
-        row[header.indexOf(VenueHeader.name)],
-        row[header.indexOf(VenueHeader.locationId)]
-      )
+      stmt.run({
+        $name: row[header.indexOf(VenueHeader.name)],
+        $locationId: row[header.indexOf(VenueHeader.locationId)],
+      })
     })
 
     console.log(`Writing ${csv.length} venues...`)
