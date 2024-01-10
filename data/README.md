@@ -3,15 +3,15 @@
 For all CSV files, data will be recognized by keys in the header row, not by order of columns. That means they can contain any unknown columns just for human-readable memo or comment.
 
 > [!IMPORTANT]
-> Be sure to run `npm run import` before run the app, to import to SQLite dabatabase.
+> Be sure to run `npm run import` before run the app, to import these data to SQLite dabatabase.
 
 ## `${yyyy}.csv`
 
 Source for events table.
 
 | id    | date       | starts_at | venue_name         | location_id | company_name    | title    | duration_min | paid |
-| ----- | ---------- | --------- | ------------------ | ----------- | --------------- | -------- | -----------: | ---- |
-| 23001 | 2023/08/04 | 13:00     | 飯田文化会館ホール | 1           | 人形劇団example | なかよし |           30 |      |
+| ----- | ---------- | --------- | ------------------ | ----------: | --------------- | -------- | -----------: | ---- |
+| 23001 | 2023/08/04 | 13:00     | 飯田文化会館ホール |           1 | 人形劇団example | なかよし |           30 |      |
 
 ## `locations.csv`
 
