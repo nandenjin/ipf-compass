@@ -6,6 +6,7 @@ import { Button, Center, Icon, Select, Spinner, Stack } from '@chakra-ui/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 import { MdAccessTime } from 'react-icons/md'
+import { useHashState } from '@/lib/navigation'
 
 const fetcher = (path: string) =>
   fetch(path)
@@ -18,10 +19,10 @@ const fetcher = (path: string) =>
     })
 
 export default function Home() {
-  const params = useSearchParams()
+  const [hash, setHash] = useHashState()
   const apiQuery = new URLSearchParams()
 
-  const day = params.get('day') || '2023-08-03'
+  const day = hash
   const dayFormat = day?.match(/^(\d{4})-(\d{2})-(\d{2})$/)
   if (dayFormat) {
     const [_, yyyy, mm, dd] = dayFormat
@@ -60,7 +61,7 @@ export default function Home() {
           fontWeight={600}
           bg="background"
           onChange={(event) => {
-            router.replace('/?day=' + event.target?.value)
+            setHash(event.target?.value)
           }}
           value={day}
         >
