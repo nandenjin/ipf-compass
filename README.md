@@ -11,3 +11,22 @@
 - `npm install`
 - `npm run import` to import data sources to SQLite DB.
 - `npm run dev` to run dev server.
+
+## Args
+
+- Envvars: The app reads them every time, on both local dev and container. `.env` is also available.
+- Build args: For `--build-arg` of Docker.
+
+> [!IMPORTANT]
+> Once `npm run build` or `docker build`, build args are embedded in artifacts and no longer be able to modified with envvars.
+
+| For envvar                           | For build arg          | description                                      | Example    |
+| :----------------------------------- | :--------------------- | :----------------------------------------------- | ---------- |
+| `AUTH_USER`                          | 🙅 N/A                 | Username for basic auth. Disable auth if not set | `user`     |
+| `AUTH_PASSWORD`                      | 🙅 N/A                 | Password for basic auth. Disable auth if not set | `password` |
+| (🗳️ Use local `/data/2023.csv`)      | `SRC_URL_EVENTS_2023`  | Download URL for `/data/2023.csv`                |            |
+| (🗳️ Use local `/data/locations.csv`) | `SRC_URL_LOCATIONS`    | Download URL for `/data/locations.csv`           |            |
+| (🗳️ Use local `/data/venues.csv`)    | `SRC_URL_VENUES`       | Download URL for `/data/venues.csv`              |            |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`       | `FIREBASE_API_KEY`     | API key from Firebase init object                |            |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`   | `FIREBASE_AUTH_DOMAIN` | Auth domain from Firebase init object            |            |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`        | `FIREBASE_APP_ID`      | App ID from Firebase init object                 |            |
