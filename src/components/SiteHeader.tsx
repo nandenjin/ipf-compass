@@ -6,8 +6,12 @@ import { Center, Flex, Spacer } from '@chakra-ui/layout'
 import { Link } from '@chakra-ui/layout'
 import NextLink from 'next/link'
 import { FirebaseHeaderAuth } from './FirebaseHeaderAuth'
+import { useHashState } from '@/lib/navigation'
 
 export default function SiteHeader() {
+  const [hash] = useHashState()
+  const dayFormat = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
+  const homeUrl = hash && dayFormat.test(hash) ? `/#${hash}` : '/'
   return (
     <>
       <Flex
@@ -23,7 +27,7 @@ export default function SiteHeader() {
         bg="white"
       >
         <Center>
-          <Link as={NextLink} href="/">
+          <Link as={NextLink} href={homeUrl}>
             <Image src={SiteLogo.src} width="50" height="50" alt="Site Logo" />
           </Link>
         </Center>
