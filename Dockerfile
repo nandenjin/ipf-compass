@@ -1,4 +1,4 @@
-FROM node:20.11.0-alpine as builder
+FROM node:20.11.1-alpine as builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -26,7 +26,7 @@ ENV NEXT_PUBLIC_FIREBASE_APP_ID=$FIREBASE_APP_ID
 
 RUN npm run build
 
-FROM node:20.11.0-alpine
+FROM node:20.11.1-alpine
 WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
