@@ -20,7 +20,7 @@
     "better-sqlite3": "9.4.3",
     "eslint": "8.57.0",
     "eslint-config-next": "14.1.4",
-    "firebase": "10.8.1",
+    "firebase": "10.9.0",
     "framer-motion": "11.0.20",
     "knex": "3.1.0",
     "leaflet": "1.9.4",
